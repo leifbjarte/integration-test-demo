@@ -1,4 +1,6 @@
 using FluentAssertions;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -39,9 +41,14 @@ namespace IntegrationTestDemo.Test
             var factory = new IntegrationTestWebAppFactory();
             var client = factory.CreateClient();
 
-            //var fileContent = new MultipartFileData(new HttpContentHeaders(), "TestContent.json");
+            using (var fileContent = new MultipartFormDataContent())
+            {
+                var bytes = await File.ReadAllBytesAsync("Files/TestContent.json");
+                fileContent.Add(new ByteArrayContent(bytes), "file", "TestContent.json");
 
-            //var result = await client.PostAsync($"files/{Guid.NewGuid()}", fileContent);
+                var response = await client.PostAsync($"files/{Guid.NewGuid()}", fileContent);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+            }
         }
     }
 }
