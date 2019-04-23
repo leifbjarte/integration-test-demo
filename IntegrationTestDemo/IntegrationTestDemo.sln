@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTestDemo.Api", "IntegrationTestDemo.Api\IntegrationTestDemo.Api.csproj", "{9D5ED38D-6297-4201-99F0-5B951CC20BBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTestDemo.Test", "IntegrationTestDemo.Test\IntegrationTestDemo.Test.csproj", "{49BB31A1-8C2B-4EA9-BA50-FDD52AA546E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D5ED38D-6297-4201-99F0-5B951CC20BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D5ED38D-6297-4201-99F0-5B951CC20BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D5ED38D-6297-4201-99F0-5B951CC20BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D5ED38D-6297-4201-99F0-5B951CC20BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49BB31A1-8C2B-4EA9-BA50-FDD52AA546E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49BB31A1-8C2B-4EA9-BA50-FDD52AA546E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49BB31A1-8C2B-4EA9-BA50-FDD52AA546E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49BB31A1-8C2B-4EA9-BA50-FDD52AA546E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0428361-D954-4CCF-86D5-846A6FAE7DF5}
+	EndGlobalSection
+EndGlobal
