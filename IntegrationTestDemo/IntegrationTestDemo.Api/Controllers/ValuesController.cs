@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using IntegrationTestDemo.Api.ErrorHandling;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IntegrationTestDemo.Api.Controllers
 {
@@ -14,17 +15,12 @@ namespace IntegrationTestDemo.Api.Controllers
         {
             var testHeader = Request.Headers.ContainsKey("x-test") ? Request.Headers["x-test"].First() : null;
 
-            //throw new SomeCustomError();
-
             return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
+        public ActionResult<string> Get(int id) => throw new SomeCustomError();
 
         // POST api/values
         [HttpPost]

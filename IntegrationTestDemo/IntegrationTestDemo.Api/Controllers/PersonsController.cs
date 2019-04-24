@@ -1,6 +1,5 @@
 ﻿using IntegrationTestDemo.Api.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace IntegrationTestDemo.Api.Controllers
 {
@@ -8,9 +7,6 @@ namespace IntegrationTestDemo.Api.Controllers
     public class PersonsController : ControllerBase
     {
         [HttpGet("{personId}")]
-        public async Task<IActionResult> GetPerson(PersonId personId)
-        {
-            return new OkObjectResult(personId);
-        }
+        public IActionResult GetPerson(PersonId personId) => new OkObjectResult(personId);
     }
 }

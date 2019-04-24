@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace IntegrationTestDemo.Api.Controllers
     [Route("files")]
     public class FileController : ControllerBase
     {
+        [Authorize]
         [HttpPost("{documentId}")]
         public async Task<IActionResult> UploadFile(Guid documentId, IFormFile file)
         {
