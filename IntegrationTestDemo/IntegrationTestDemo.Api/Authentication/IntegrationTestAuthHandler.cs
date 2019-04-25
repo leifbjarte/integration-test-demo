@@ -61,7 +61,8 @@ namespace IntegrationTestDemo.Api.Authentication
             {
                 new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", tokenDeserialized.UniqueId.ToString()),
                 new Claim(ClaimTypes.Name, tokenDeserialized.Name),
-                new Claim(ClaimTypes.Email, tokenDeserialized.Email)
+                new Claim(ClaimTypes.Email, tokenDeserialized.Email),
+                new Claim(ClaimTypes.Role, "Admin")
             };
 
             //TODO: Add whatever claims used in your API.
