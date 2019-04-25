@@ -59,9 +59,9 @@ namespace IntegrationTestDemo.Api.Authentication
 
             var claims = new List<Claim>
             {
-                new Claim("http://schemas.integrationtest.com/identity/claims/uniqueid", tokenDeserialized.UniqueId.ToString()),
-                new Claim("http://schemas.integrationtest.com/identity/claims/name", tokenDeserialized.Name),
-                new Claim("http://schemas.integrationtest.com/identity/claims/email", tokenDeserialized.Email)
+                new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", tokenDeserialized.UniqueId.ToString()),
+                new Claim(ClaimTypes.Name, tokenDeserialized.Name),
+                new Claim(ClaimTypes.Email, tokenDeserialized.Email)
             };
 
             //TODO: Add whatever claims used in your API.
