@@ -1,7 +1,9 @@
 ﻿using IntegrationTestDemo.Api.Authentication;
+using IntegrationTestDemo.Api.Authorization;
 using IntegrationTestDemo.Api.ErrorHandling;
 using IntegrationTestDemo.Api.ModelBinding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +44,8 @@ namespace IntegrationTestDemo.Api
             {
                 authBuilder.AddScheme<IntegrationTestAuthOptions, IntegrationTestAuthHandler>("IntegrationTestAuth", options => { });
             }
+
+            services.AddSingleton<IAuthorizationHandler, AdminAuthHandler>();
 
             #endregion
         }

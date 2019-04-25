@@ -30,15 +30,21 @@ namespace IntegrationTestDemo.Api.Controllers
             throw new SomeCustomError();
         }
 
-        //[Authorize]
+        [Authorize]
+        [HttpGet("ping")]
+        public async Task<IActionResult> Ping()
+        {
+            return new OkObjectResult(new { Result = "pong" });
+        }
+
         [HttpPost("{personId}/documents/{documentId}")]
         public async Task<IActionResult> UploadFile(PersonId personId, Guid documentId, IFormFile file)
         {
             #region Authorization
 
-            //var result = await authorizationService.AuthorizeAsync(User, null, new ElevatedUserRequirement());
-            //if (!result.Succeeded)
-            //    return new ForbidResult();
+            var result = await authorizationService.AuthorizeAsync(User, null, new AdminUserRequirement());
+            if (!result.Succeeded)
+                return new ForbidResult();
 
             #endregion
 

@@ -20,7 +20,7 @@ namespace IntegrationTestDemo.Test
         }
 
         [Fact]
-        public async Task GetValueByIdShouldThrowException()
+        public async Task A_GetValueByIdShouldThrowException()
         {
             var client = factory.CreateClient();
 
@@ -30,15 +30,17 @@ namespace IntegrationTestDemo.Test
         }
 
         /// <summary>
-        /// Illustrating file upload support, model binding, anonymous deseralization and custom headers
+        /// Illustrating file upload support, model binding, anonymous deseralization 
+        /// and custom headers
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UploadFileAnonymouslyForPersonShouldWork()
+        public async Task B_UploadFileAnonymouslyForPersonShouldWork()
         {
             var client = factory.CreateClient();
 
-            var message = new HttpRequestMessage(HttpMethod.Post, $"persons/test@testesen.com/documents/{Guid.NewGuid()}");
+            var message = new HttpRequestMessage(HttpMethod.Post, 
+                $"persons/test@testesen.com/documents/{Guid.NewGuid()}");
             message.Headers.Add("x-test", "It works!");
 
             using (var fileContent = new MultipartFormDataContent())
@@ -48,6 +50,8 @@ namespace IntegrationTestDemo.Test
                 message.Content = fileContent;
 
                 var response = await client.SendAsync(message);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+
                 var body = await response.Content.ReadAsStringAsync();
 
                 var deserializeAs = new
@@ -61,23 +65,49 @@ namespace IntegrationTestDemo.Test
                 personId.Name.Should().Be("Test Testesen");
                 personId.Email.Should().Be("test@testesen.com");
                 personId.UniqueId.Should().NotBeEmpty();
-
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
-        
-        /// <summary>
-        /// Illustrating file upload support, model binding, anonymous deseralization and custom headers
-        /// </summary>
-        /// <returns></returns>
+
         [Fact]
-        public async Task UploadFileWithAuthenticationForPersonShouldWork()
+        public async Task C_PingShouldPong()
+        {
+            var client = factory.CreateClient();
+
+            var result = await client.GetAsync("persons/ping");
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var body = await result.Content.ReadAsStringAsync();
+
+            var jsonResult = JsonConvert.DeserializeAnonymousType(body, new { result = string.Empty });
+            jsonResult.result.Should().Be("pong");
+        }
+
+        [Fact]
+        public async Task D_PingShouldPongWhenAuthenticated()
         {
             var client = factory.CreateClient()
                 .WithTestUser(TestUserProfile.TestTestesen)
                 .AddTestAuthToken();
 
-            var message = new HttpRequestMessage(HttpMethod.Post, $"persons/test@testesen.com/documents/{Guid.NewGuid()}");
+            var result = await client.GetAsync("persons/ping");
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var body = await result.Content.ReadAsStringAsync();
+
+            var jsonResult = JsonConvert.DeserializeAnonymousType(body, new { result = string.Empty });
+            jsonResult.result.Should().Be("pong");
+        }
+
+
+        [Fact]
+        public async Task E_UploadFileWithAuthenticationForPersonShouldWork()
+        {
+            var client = factory.CreateClient()
+                .WithTestUser(TestUserProfile.TestTestesen)
+                .AddTestAuthToken();
+
+            var message = new HttpRequestMessage(HttpMethod.Post, 
+                $"persons/test@testesen.com/documents/{Guid.NewGuid()}");
             message.Headers.Add("x-test", "It works!");
 
             using (var fileContent = new MultipartFormDataContent())
