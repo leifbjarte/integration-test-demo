@@ -10,7 +10,7 @@ using Xunit;
 
 namespace IntegrationTestDemo.Test
 {
-    public class SimpleScenario
+    public class Tests
     {
         /// <summary>
         /// Test to illustrate basic use of web app factory, including sending headers

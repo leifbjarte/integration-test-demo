@@ -1,10 +1,13 @@
-﻿using IntegrationTestDemo.Api.ErrorHandling;
+﻿using IntegrationTestDemo.Api.Authentication;
+using IntegrationTestDemo.Api.ErrorHandling;
 using IntegrationTestDemo.Api.ModelBinding;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace IntegrationTestDemo.Api
 {
@@ -23,6 +26,24 @@ namespace IntegrationTestDemo.Api
             services
                 .AddMvc(options => options.ModelBinderProviders.Insert(0, new PersonModelBinderProvider()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            #region Authentication
+
+            var authBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    if (Environment.GetEnvironmentVariable("INTEGRATION_TEST") == "true")
+                    {
+                        options.ForwardAuthenticate = "IntegrationTestAuth";
+                    }
+                });
+
+            if (Environment.GetEnvironmentVariable("INTEGRATION_TEST") == "true")
+            {
+                authBuilder.AddScheme<IntegrationTestAuthOptions, IntegrationTestAuthHandler>("IntegrationTestAuth", options => { });
+            }
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,8 +60,10 @@ namespace IntegrationTestDemo.Api
             }
 
             app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
 }
+

@@ -9,7 +9,6 @@ namespace IntegrationTestDemo.Api.Controllers
     [Route("files")]
     public class FileController : ControllerBase
     {
-        [Authorize]
         [HttpPost("{documentId}")]
         public async Task<IActionResult> UploadFile(Guid documentId, IFormFile file)
         {
