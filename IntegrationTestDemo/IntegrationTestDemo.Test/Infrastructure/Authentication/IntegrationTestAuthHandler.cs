@@ -9,10 +9,12 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace IntegrationTestDemo.Api.Authentication
+namespace IntegrationTestDemo.Test.Infrastructure.Authentication
 {
     internal class IntegrationTestAuthHandler : AuthenticationHandler<IntegrationTestAuthOptions>
     {
+        public const string AuthenticationScheme = "IntegrationTestAuth";
+
         public IntegrationTestAuthHandler(IOptionsMonitor<IntegrationTestAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {

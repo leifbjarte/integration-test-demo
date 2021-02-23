@@ -1,15 +1,12 @@
-﻿using IntegrationTestDemo.Api.Authentication;
-using IntegrationTestDemo.Api.Authorization;
-using IntegrationTestDemo.Api.ErrorHandling;
+﻿using IntegrationTestDemo.Api.Authorization;
+using IntegrationTestDemo.Api.Http;
 using IntegrationTestDemo.Api.ModelBinding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace IntegrationTestDemo.Api
 {
@@ -25,48 +22,30 @@ namespace IntegrationTestDemo.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddMvc(options => options.ModelBinderProviders.Insert(0, new PersonModelBinderProvider()))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => options.ModelBinderProviders.Insert(0, new PersonModelBinderProvider()));
 
-            #region Authentication
-
-            var authBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-                {
-                    if (Environment.GetEnvironmentVariable("INTEGRATION_TEST") == "true")
-                    {
-                        options.ForwardAuthenticate = "IntegrationTestAuth";
-                    }
-                });
-
-            if (Environment.GetEnvironmentVariable("INTEGRATION_TEST") == "true")
-            {
-                authBuilder.AddScheme<IntegrationTestAuthOptions, IntegrationTestAuthHandler>("IntegrationTestAuth", options => { });
-            }
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer();
 
             services.AddSingleton<IAuthorizationHandler, AdminAuthHandler>();
 
-            #endregion
+            services.AddTransient<ThirdPartyApiMessageHandler>();
+            services.AddHttpClient(HttpClientNames.ThirdPartyApi)
+                .AddHttpMessageHandler<ThirdPartyApiMessageHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

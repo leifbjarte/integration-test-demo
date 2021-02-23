@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace IntegrationTestDemo.Api.Authentication
+namespace IntegrationTestDemo.Test.Infrastructure.Authentication
 {
     public class IntegrationTestAuthOptions : AuthenticationSchemeOptions
     {

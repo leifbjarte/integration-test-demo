@@ -1,5 +1,4 @@
 ﻿using IntegrationTestDemo.Api.Authorization;
-using IntegrationTestDemo.Api.ErrorHandling;
 using IntegrationTestDemo.Api.ModelBinding;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,12 +22,6 @@ namespace IntegrationTestDemo.Api.Controllers
         }
 
         #endregion
-
-        [HttpGet("{personId}")]
-        public IActionResult GetPerson(PersonId personId)
-        {
-            throw new SomeCustomError();
-        }
 
         [Authorize]
         [HttpGet("ping")]
