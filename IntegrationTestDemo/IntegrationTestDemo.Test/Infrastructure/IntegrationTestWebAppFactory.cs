@@ -1,5 +1,6 @@
 ﻿using IntegrationTestDemo.Api;
 using IntegrationTestDemo.Api.Http;
+using IntegrationTestDemo.Api.ServiceBus;
 using IntegrationTestDemo.Api.TableStorage;
 using IntegrationTestDemo.Test.Infrastructure;
 using IntegrationTestDemo.Test.Infrastructure.Authentication;
@@ -21,9 +22,12 @@ namespace IntegrationTestDemo.Test
             Environment.SetEnvironmentVariable("INTEGRATION_TEST", "true");
         }
 
-        public Action<Mock<ITableStorageThingy>> TableStorageMockAction { get; set; }
+        public Mock<ITableStorageRepository> TableStorageMock { get; set; } = new Mock<ITableStorageRepository>();
 
-        public Action<Mock<ThirdPartyApiMessageHandler>> MessageHandlerMockAction { get; set; }
+        public Mock<ThirdPartyApiMessageHandler> MessageHandlerMock { get; set; } = new Mock<ThirdPartyApiMessageHandler>();
+
+        public Mock<IQueueMessageSender> MessageSenderMock { get; set; } = new Mock<IQueueMessageSender>();
+
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -33,15 +37,17 @@ namespace IntegrationTestDemo.Test
                 builder.AddScheme<IntegrationTestAuthOptions, IntegrationTestAuthHandler>(IntegrationTestAuthHandler.AuthenticationScheme, opts => { });
                 services.PostConfigureAll<JwtBearerOptions>(o => o.ForwardDefault = IntegrationTestAuthHandler.AuthenticationScheme);
 
-                services.TryRemoveService<ITableStorageThingy>();
-                var tableStorageThingyMock = new Mock<ITableStorageThingy>();
-                TableStorageMockAction?.Invoke(tableStorageThingyMock);
-                services.AddSingleton(tableStorageThingyMock.Object);
+                services.TryRemoveService<ITableStorageRepository>();
+                services.AddSingleton(TableStorageMock.Object);
+
+                services.TryRemoveService<IQueueMessageSender>();
+                services.AddSingleton(MessageSenderMock.Object);
 
                 services.TryRemoveService<ThirdPartyApiMessageHandler>();
-                var messageHandlerMock = new Mock<ThirdPartyApiMessageHandler>();
-                MessageHandlerMockAction?.Invoke(messageHandlerMock);
-                var client = new HttpClient(messageHandlerMock.Object);
+                var client = new HttpClient(MessageHandlerMock.Object)
+                {
+                    BaseAddress = new Uri("https://bogus-address.com")
+                };
 
                 services.TryRemoveService<IHttpClientFactory>();
                 var httpClientFactoryMock = new Mock<IHttpClientFactory>();

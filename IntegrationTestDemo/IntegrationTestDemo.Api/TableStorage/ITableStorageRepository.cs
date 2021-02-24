@@ -2,7 +2,7 @@
 
 namespace IntegrationTestDemo.Api.TableStorage
 {
-    public interface ITableStorageThingy
+    public interface ITableStorageRepository
     {
         Task<string> GetSomeContentAsync(PartitionRowKey identifier);
 
