@@ -31,7 +31,9 @@ namespace IntegrationTestDemo.Test
             var identifier = Guid.NewGuid().ToString();
             var content = "Some data from table storage";
 
-            //mock setup
+            factory.TableStorageMock.Setup(m => m.GetSomeContentAsync(It.Is<PartitionRowKey>(pr => pr.PartitionKey == "dataset" && pr.RowKey == identifier)))
+                .ReturnsAsync(content);
+
 
             var client = factory.CreateClient()
                 .WithTestUser(TestUserProfile.TestTestesen)
@@ -49,8 +51,6 @@ namespace IntegrationTestDemo.Test
         {
             var identifier = Guid.NewGuid().ToString();
 
-            //mock setups?
-
             var client = factory.CreateClient()
                 .WithTestUser(TestUserProfile.TestTestesen)
                 .AddTestAuthToken();
@@ -65,7 +65,8 @@ namespace IntegrationTestDemo.Test
             var response = await client.PutAsync($"proxy/some-data-from-table-storage/{identifier}", content);
             response.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-            //mock verification
+            factory.TableStorageMock.Verify(m => m.UpdateSomeContentAsync(It.Is<PartitionRowKey>(pr => pr.PartitionKey == "dataset" && pr.RowKey == identifier), testInput.SomeData), Times.Once);
+
         }
 
         [Fact]
@@ -75,7 +76,10 @@ namespace IntegrationTestDemo.Test
                 .WithTestUser(TestUserProfile.TestTestesen)
                 .AddTestAuthToken();
 
-            //mock setup, with callback
+            CloudEvent sentMessage = null;
+            factory.MessageSenderMock
+                .Setup(m => m.SendMessageToQueueAsync(It.IsAny<CloudEvent>()))
+                .Callback<CloudEvent>(cloudEvent => sentMessage = cloudEvent);
 
             var testInput = new
             {
@@ -86,7 +90,7 @@ namespace IntegrationTestDemo.Test
             var response = await client.PostAsync($"proxy/some-message-to-other-system", content);
             response.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-            //mock/callback verification
+            sentMessage.Data.Should().Be(testInput.SomeData);
         }
 
         [Fact]
@@ -95,7 +99,13 @@ namespace IntegrationTestDemo.Test
             var identifier = Guid.NewGuid().ToString();
             var content = "Some content from third party API";
 
-            //protected mock setup
+            factory.MessageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(content)
+                });
 
             var client = factory.CreateClient()
                 .WithTestUser(TestUserProfile.TestTestesen)

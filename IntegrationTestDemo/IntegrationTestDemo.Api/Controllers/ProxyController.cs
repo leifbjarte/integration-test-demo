@@ -48,7 +48,7 @@ namespace IntegrationTestDemo.Api.Controllers
             return data;
         }
 
-        [HttpPut("proxy/some-data-from-table-storage/{identitier}")]
+        [HttpPut("proxy/some-data-from-table-storage/{identifier}")]
         public async Task<ActionResult> UpdateDataInTableStorage(string identifier, [FromBody] SomeDataInput requestData)
         {
             await tableStorageThingy.UpdateSomeContentAsync(new ITableStorageRepository.PartitionRowKey("dataset", identifier), requestData.SomeData);
